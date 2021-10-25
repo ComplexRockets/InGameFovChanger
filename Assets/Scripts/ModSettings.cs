@@ -1,10 +1,5 @@
 namespace Assets.Scripts
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using ModApi.Common;
     using ModApi.Settings.Core;
 
     /// <summary>
@@ -44,7 +39,7 @@ namespace Assets.Scripts
         /// <summary>
         /// Initializes the settings in the category.
         /// </summary>
-        protected override void InitializeSettings()
+        protected override void InitializeSettings() // the fov input setting
         {
             fovInput = this.CreateString("Fov Input")
                 .SetDescription("Set the Input that controls fov")

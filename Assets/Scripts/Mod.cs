@@ -18,7 +18,7 @@ namespace Assets.Scripts
         SliderModel fovSlider;
         private StringSetting fovInputSetting => ModSettings.Instance.fovInput;
 
-        private float getFov()
+        private float getFov() // Gets the fov value
         {
             if (fovInputSetting.Value == "FovSlider" || fovInput == null)
                 return fovSlider.Value;
@@ -32,9 +32,9 @@ namespace Assets.Scripts
         protected override void OnModInitialized()
         {
             base.OnModInitialized();
-            Game.Instance.UserInterface.AddBuildInspectorPanelAction(ModApi.Ui.Inspector.InspectorIds.FlightView, OnBuildFlightViewInspectorPanel);
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(ModApi.Ui.Inspector.InspectorIds.FlightView, OnBuildFlightViewInspectorPanel); // Subscribe to the flight view panel oppening event
 
-            DevConsoleApi.RegisterCommand("SetFovInput", delegate (string input)
+            DevConsoleApi.RegisterCommand("SetFovInput", delegate (string input) // register the SetFovInput command
             {
                 if (input != "FovSlider") fovInput = InputControllerInput.Create(input);
                 if (fovInput != null)
@@ -51,12 +51,12 @@ namespace Assets.Scripts
             if (fovInputSetting.Value != "FovSlider") fovInput = InputControllerInput.Create(fovInputSetting.Value);
         }
 
-        private void OnSettingsChanged(object sender, SettingsChangedEventArgs<ModSettings> e)
+        private void OnSettingsChanged(object sender, SettingsChangedEventArgs<ModSettings> e) // Update when the fov input is changed
         {
             if (fovInputSetting.Value != "FovSlider") fovInput = InputControllerInput.Create(fovInputSetting.Value);
         }
 
-        private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request)
+        private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request) // Build teh fov input slider
         {
             fov = Game.Instance.Settings.Game.General.FieldOfView;
 
@@ -77,7 +77,7 @@ namespace Assets.Scripts
             fovSlider.ValueFormatter = ((float x) => $"{(fovSlider.Value):n2}");
         }
 
-        public void Update()
+        public void Update() // sets the fov each frame if it changed
         {
             if (Game.InFlightScene)
                 if (getFov() != fov)
@@ -87,7 +87,7 @@ namespace Assets.Scripts
                 }
         }
 
-        private void RefreshInput()
+        private void RefreshInput() // Don't really remember but probably updates the input value
         {
             if (fovInput is InputControllerInput)
                 ((InputControllerInput)fovInput).RefreshInput(Game.Instance.FlightScene.CraftNode.CraftScript.RootPart);
