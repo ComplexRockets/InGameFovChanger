@@ -8,6 +8,11 @@ namespace Assets.Scripts
     using UnityEngine;
     using ModApi.Settings.Core.Events;
     using ModApi.Settings.Core;
+    using ModApi.Scenes.Events;
+    using UI.Xml;
+    using Assets.Scripts.Design;
+    using System;
+    using ModApi.Ui;
 
     public class Mod : ModApi.Mods.GameMod
     {
@@ -16,6 +21,7 @@ namespace Assets.Scripts
         private float fov;
         private static IInputControllerInput fovInput;
         SliderModel fovSlider;
+        SliderScript sliderScript;
         private StringSetting fovInputSetting => ModSettings.Instance.fovInput;
 
         private float getFov() // Gets the fov value
@@ -47,8 +53,30 @@ namespace Assets.Scripts
             });
 
             ModSettings.Instance.Changed += OnSettingsChanged;
+            Game.Instance.SceneManager.SceneLoaded += OnSceneloaded;
 
             if (fovInputSetting.Value != "FovSlider") fovInput = InputControllerInput.Create(fovInputSetting.Value);
+        }
+
+        private void OnSceneloaded(object sender, SceneEventArgs e)
+        {
+            if (Game.InDesignerScene)
+            {
+                foreach (IFlyout flyout in Game.Instance.Designer.DesignerUi.Flyouts.All)
+                {
+                    if (flyout.Title == "VIEW OPTIONS")
+                    {
+                        var layout = flyout.Transform.GetComponentInChildren<IXmlLayout>();
+                        var root = layout.GetElementById<XmlElement>("gizmo-com").parentElement.parentElement;
+                        sliderScript = Game.Instance.UserInterface.BuildUserInterfaceFromResource<SliderScript>("InGameFovChanger/Slider", (s, c) =>
+                        {
+                            s.OnLayoutRebuilt(c.XmlLayout);
+                        }, root.transform);
+                    }
+                }
+                //XmlElement flyoutPanel = ((DesignerScript)Game.Instance.Designer).DesignerUiScript.DesignerUiController.xmlLayout.GetElementById("flyout-view").GetChildElementsWithClass("flyout-content")[0];
+                //Debug.Log("ezezezezezezeze " + ((XmlLayout)flyoutPanel.GetComponentInChildren<XmlElement>().gameObject.GetComponentInChildren<IXmlElement>().XmlLayout).Xml);
+            }
         }
 
         private void OnSettingsChanged(object sender, SettingsChangedEventArgs<ModSettings> e) // Update when the fov input is changed
@@ -56,7 +84,7 @@ namespace Assets.Scripts
             if (fovInputSetting.Value != "FovSlider") fovInput = InputControllerInput.Create(fovInputSetting.Value);
         }
 
-        private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request) // Build teh fov input slider
+        private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request) // Build the fov input slider
         {
             fov = Game.Instance.Settings.Game.General.FieldOfView;
 
@@ -75,6 +103,12 @@ namespace Assets.Scripts
             }, 0.5f, 150);
             g.Add(fovSlider);
             fovSlider.ValueFormatter = ((float x) => $"{(fovSlider.Value):n2}");
+        }
+
+        public void OnDesignerFovSliderEdit(float value)
+        {
+            Game.Instance.Designer.GizmoCamera.fieldOfView = value;
+            Game.Instance.Designer.DesignerCamera.Camera.fieldOfView = value;
         }
 
         public void Update() // sets the fov each frame if it changed

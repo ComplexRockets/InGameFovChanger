@@ -1,0 +1,8 @@
+<XmlLayout xmlns="http://www.w3schools.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\..\ModTools\UI\XmlLayout.xsd">
+    <Include path="Ui/Xml/Design/DesignStyles.xml" />
+    <Panel class="slider" preferredHeight="40" offsetXY="0 -20">
+        <TextMeshPro class="label tooltip" text="FOV" tooltip="Changes the camera's FOV" />
+        <TextMeshPro id="fov-slider-text" class="value" text="" />
+        <Slider id="fov-slider" />
+    </Panel>
+</XmlLayout>

@@ -18,5 +18,7 @@ MonoBehaviour:
   - Content/XML UI
   AutomaticallyRemoveEntries: 1
   entries:
+  - path: InGameFovChanger/Slider
+    resource: {fileID: 4900000, guid: 5fc6a08e2a558477a94a0212afc57a54, type: 3}
   - path: InGameFovChanger/UIResourceDatabase
     resource: {fileID: 11400000}
