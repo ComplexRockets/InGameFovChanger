@@ -10,8 +10,6 @@ namespace Assets.Scripts
     using ModApi.Settings.Core;
     using ModApi.Scenes.Events;
     using UI.Xml;
-    using Assets.Scripts.Design;
-    using System;
     using ModApi.Ui;
 
     public class Mod : ModApi.Mods.GameMod
@@ -39,6 +37,7 @@ namespace Assets.Scripts
         {
             base.OnModInitialized();
             Game.Instance.UserInterface.AddBuildInspectorPanelAction(ModApi.Ui.Inspector.InspectorIds.FlightView, OnBuildFlightViewInspectorPanel); // Subscribe to the flight view panel oppening event
+            Game.Instance.UserInterface.AddBuildInspectorPanelAction(ModApi.Ui.Inspector.InspectorIds.MapView, OnBuildMapViewInspectorPanel);  // Subscribe to the map view panel oppening event
 
             DevConsoleApi.RegisterCommand("SetFovInput", delegate (string input) // register the SetFovInput command
             {
@@ -86,7 +85,7 @@ namespace Assets.Scripts
 
         private void OnBuildFlightViewInspectorPanel(BuildInspectorPanelRequest request) // Build the fov input slider
         {
-            fov = Game.Instance.Settings.Game.General.FieldOfView;
+            if (fovInputSetting.Value == "FovSlider") fov = Game.Instance.Settings.Game.General.FieldOfView;
 
             var g = new GroupModel("Camera Tools");
             request.Model.AddGroup(g);
@@ -97,6 +96,27 @@ namespace Assets.Scripts
                 if (fovInputSetting.Value == "FovSlider")
                 {
                     fov = x;
+                    Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.fieldOfView = fov;
+                    CameraManagerScript.Instance.FieldOfView = fov;
+                }
+
+            }, 0.5f, 150);
+            g.Add(fovSlider);
+            fovSlider.ValueFormatter = ((float x) => $"{(fovSlider.Value):n2}");
+        }
+
+        private void OnBuildMapViewInspectorPanel(BuildInspectorPanelRequest request)
+        {
+            var g = new GroupModel("Camera Tools");
+            request.Model.AddGroup(g);
+            g.Collapsed = true;
+
+            fovSlider = new SliderModel("Fov", () => fov, delegate (float x)
+            {
+                if (fovInputSetting.Value == "FovSlider")
+                {
+                    fov = x;
+                    Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.fieldOfView = fov;
                     CameraManagerScript.Instance.FieldOfView = fov;
                 }
 
@@ -118,6 +138,7 @@ namespace Assets.Scripts
                 {
                     fov = getFov();
                     CameraManagerScript.Instance.FieldOfView = fov;
+                    if (Game.Instance.FlightScene.ViewManager.MapViewManager.IsInForeground) Game.Instance.FlightScene.ViewManager.MapViewManager.MapViewCamera.fieldOfView = fov;
                 }
         }
 

@@ -28,11 +28,12 @@ MonoBehaviour:
   _steamTitle: 
   _steamVisibility: 0
   _versionMajor: 1
-  _versionMinor: 0
+  _versionMinor: 1
   _partCategories: []
   _parts: []
   _partStyleExtensions: []
   _partTextureStyles: []
   _persistentObjects:
   - {fileID: 4794054897901565243, guid: 210b735ab006d4984820208fe944a14d, type: 3}
-  _uiResourceDatabases: []
+  _uiResourceDatabases:
+  - {fileID: 11400000, guid: 1336eadc2336d4f9a98375ca145a21d6, type: 2}
